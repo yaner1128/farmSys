@@ -1,7 +1,17 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Layout from "@/views/Layout/index.vue";
+import { ElMessage } from "element-plus";
 
 const routes: Array<RouteRecordRaw> = [
+  {
+    path: '/',
+    redirect: '/login',
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: () => import("../views/Login/index.vue"),
+  },
   // {
   //   path: "/",
   //   component: Layout,
@@ -15,8 +25,9 @@ const routes: Array<RouteRecordRaw> = [
   //   ],
   // },
   {
-    path: "/",
+    path: "/project",
     component: Layout,
+    redirect: "/project",
     children: [
       {
         path: "/project",
@@ -64,16 +75,24 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
-  {
-    path: "/login",
-    name: "Login",
-    component: () => import("../views/Login/index.vue"),
-  },
 ];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 });
+
+router.beforeEach((to, from, next) => {
+  if (to.path === '/login') {
+    next()
+  } else {
+    if (to.path !== '/login' && !localStorage.getItem("farmSys")) {
+      next({ path: '/login' })
+      ElMessage.error('登录过期, 请重新登录!')
+    } else {
+      next()
+    }
+  }
+})
 
 export default router;

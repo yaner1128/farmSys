@@ -55,7 +55,8 @@ export default defineComponent({
       loginFormRef.value.validate((valid: boolean) => {
         if (valid) {
           // 跳转首页
-          router.push("/");
+          localStorage.setItem("farmSys", JSON.parse(JSON.stringify(data.loginForm)))
+          router.push("/project");
         }
       });
     };

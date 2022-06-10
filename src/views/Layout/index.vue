@@ -2,6 +2,7 @@
   <el-container>
     <el-header>
       <h1>欢迎访问湖南省农业生产调度管理平台</h1>
+      <div class="loginOut" @click="loginOutClick">退出登录</div>
     </el-header>
     <el-container>
       <el-aside class="aside">
@@ -74,6 +75,7 @@
 import { defineComponent, reactive, toRefs } from "vue";
 import { Document, List, Setting } from "@element-plus/icons-vue";
 import router from "@/router";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 export default defineComponent({
   name: "",
@@ -93,10 +95,19 @@ export default defineComponent({
     },
   },
   setup() {
-    const data = reactive({});
+    const loginOutClick = () => {
+      ElMessageBox.confirm('确认退出登录吗？','提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        router.push("/login");
+        localStorage.removeItem("farmSys")
+      })
+    }
 
     return {
-      ...toRefs(data),
+      loginOutClick,
     };
   },
 });
@@ -105,9 +116,13 @@ export default defineComponent({
 <style lang="scss" scoped>
 .el-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   color: #fff;
   background-color: #055a69;
+  .loginOut {
+    cursor: pointer;
+  }
 }
 .aside {
   width: 240px;
