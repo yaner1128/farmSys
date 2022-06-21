@@ -1,48 +1,44 @@
 <template>
   <el-container>
     <el-header>
-      <h1>欢迎访问湖南省农业生产调度管理平台</h1>
-      <div class="loginOut" @click="loginOutClick">退出登录</div>
+      <div>
+        <h1>欢迎访问湖南省农业生产调度管理平台</h1>
+        <div class="loginOut" @click="loginOutClick">退出登录</div>
+      </div>
     </el-header>
     <el-container>
       <el-aside class="aside">
         <el-scrollbar height="100vh">
           <el-menu
-            active-text-color="#ffd04b"
-            background-color="#055a69"
+            active-text-color="#007d79"
+            background-color="#bddcd3"
             class="el-menu-vertical-demo"
-            text-color="#fff"
+            text-color="#007d79"
             :default-active="routerCur"
             :unique-opened="true"
             router
           >
-            <!-- <el-menu-item index="/home">
-              <el-icon><icon-menu /></el-icon>
-              <span>工作台</span>
-            </el-menu-item> -->
             <el-menu-item index="/project">
               <el-icon><List /></el-icon>
               <span>产品列表</span>
             </el-menu-item>
-            <!-- <el-menu-item index="/filling">
-              <el-icon><Document /></el-icon>
-              <span>填报</span>
-            </el-menu-item> -->
             <el-sub-menu index="/filling">
               <template #title>
                 <el-icon><Document /></el-icon>
                 <span>填报</span>
               </template>
-              <el-menu-item index="/filling/create">新建</el-menu-item>
-              <el-menu-item index="/filling/todo">待完成填报</el-menu-item>
-              <el-menu-item index="/filling/completed">已完成填报</el-menu-item>
-              <el-menu-item index="/filling/completion"
-                >任务完成情况</el-menu-item
-              >
+              <el-menu-item index="/create">新建</el-menu-item>
+              <el-menu-item index="/todo">待完成填报</el-menu-item>
+              <el-menu-item index="/completed">已完成填报</el-menu-item>
+              <el-menu-item index="/completion">任务完成情况</el-menu-item>
             </el-sub-menu>
             <el-menu-item index="/setting">
               <el-icon><Setting /></el-icon>
               <span>基本设置</span>
+            </el-menu-item>
+            <el-menu-item index="/reportForm">
+              <el-icon><Histogram /></el-icon>
+              <span>报表</span>
             </el-menu-item>
           </el-menu>
         </el-scrollbar>
@@ -72,10 +68,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from "vue";
-import { Document, List, Setting } from "@element-plus/icons-vue";
+import { defineComponent } from "vue";
+import { Document, List, Setting, Histogram } from "@element-plus/icons-vue";
 import router from "@/router";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ElMessageBox } from "element-plus";
 
 export default defineComponent({
   name: "",
@@ -83,6 +79,7 @@ export default defineComponent({
     Document,
     List,
     Setting,
+    Histogram,
   },
   computed: {
     routerCur() {
@@ -96,15 +93,15 @@ export default defineComponent({
   },
   setup() {
     const loginOutClick = () => {
-      ElMessageBox.confirm('确认退出登录吗？','提示', {
-        confirmButtonText: '确认',
-        cancelButtonText: '取消',
-        type: 'warning',
+      ElMessageBox.confirm("确认退出登录吗？", "提示", {
+        confirmButtonText: "确认",
+        cancelButtonText: "取消",
+        type: "warning",
       }).then(() => {
         router.push("/login");
-        localStorage.removeItem("farmSys")
-      })
-    }
+        localStorage.removeItem("farmSys");
+      });
+    };
 
     return {
       loginOutClick,
@@ -114,20 +111,39 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+/deep/ li.el-menu-item.is-active {
+  background-color: #007d79;
+  color: #fff;
+}
 .el-header {
+  width: 100%;
+  padding: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: #fff;
-  background-color: #055a69;
+  border-bottom: 1px solid #fff;
+  background-image: url("../../assets/pic5.jpg");
+  background-repeat: no-repeat;
+  background-size: 100%;
+  > div {
+    background: linear-gradient(to right, #007d79, rgba(255, 255, 255, 0.1));
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
   .loginOut {
     cursor: pointer;
+    color: #007d79;
   }
 }
 .aside {
   width: 240px;
   height: calc(100vh - 60px);
-  background-color: #055a69;
+  background-color: #bddcd3;
   box-sizing: border-box;
   .el-menu {
     border: none;

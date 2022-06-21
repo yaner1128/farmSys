@@ -16,16 +16,19 @@
       v-if="active === 2"
       :active="active"
       @activeChange="activeChange"
+      :valueData="valueData"
     ></sales-view>
     <product-view
       v-else-if="active === 1"
       :active="active"
       @activeChange="activeChange"
+      :valueData="valueData"
     ></product-view>
     <source-view
       v-else
       :active="active"
       @activeChange="activeChange"
+      :valueData="valueData"
     ></source-view>
   </div>
 </template>
@@ -43,10 +46,16 @@ export default defineComponent({
     salesView,
     productView,
   },
+  created() {
+    localStorage.removeItem("sourceView");
+    localStorage.removeItem("productView");
+    localStorage.removeItem("salesView");
+  },
   setup() {
     const data = reactive({
-      product: "桃江稻花香米",
+      product: "",
       active: 0,
+      valueData: {},
       sourceClick: () => {
         data.active = 0;
       },
@@ -56,10 +65,12 @@ export default defineComponent({
       salesClick: () => {
         data.active = 2;
       },
-      activeChange: (val: number) => {
-        // eslint-disable-next-line no-debugger
-        debugger;
-        data.active = val;
+      activeChange: ({ active, dataValue, name }: any) => {
+        data.active = active;
+        if (dataValue) {
+          data.valueData = Object.assign({ name: name }, dataValue);
+          data.product = name;
+        }
       },
     });
 

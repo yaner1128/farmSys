@@ -7,7 +7,7 @@
       <el-form-item label="产品品类：">
         <el-select
           v-model="value1"
-          placeholder="Select"
+          placeholder="请选择一级分类"
           class="item"
           @change="value1Change"
           disabled
@@ -21,7 +21,7 @@
         </el-select>
         <el-select
           v-model="value2"
-          placeholder="Select"
+          placeholder="请选择二级分类"
           class="item"
           v-show="value1"
           @change="value2Change"
@@ -36,7 +36,7 @@
         </el-select>
         <el-select
           v-model="value3"
-          placeholder="Select"
+          placeholder="请选择三级分类"
           class="item"
           v-show="value2"
           @change="value3Change"
@@ -51,7 +51,7 @@
         </el-select>
         <el-select
           v-model="value4"
-          placeholder="Select"
+          placeholder="请选择四级分类"
           class="item"
           v-show="value3"
           disabled
@@ -65,16 +65,19 @@
         </el-select>
       </el-form-item>
       <el-form-item label="本次销售量：">
-        <el-input v-model="form.estProduction" placeholder="请输入预计生产量" />
+        <el-input
+          v-model="form.estProduction"
+          placeholder="请输入本次销售量(kg)"
+        />
       </el-form-item>
       <el-form-item label="已交货：">
-        <el-input v-model="form.produced" placeholder="请输入已生产量" />
+        <el-input v-model="form.produced" placeholder="请输入已交货量(kg)" />
       </el-form-item>
       <el-form-item label="单价：">
-        <el-input v-model="form.inventory" placeholder="请输入库存量" />
+        <el-input v-model="form.inventory" placeholder="请输入销售单价(元)" />
       </el-form-item>
       <el-form-item label="已销售：">
-        <el-input v-model="form.sold" placeholder="请输入已销售数量" /><span
+        <el-input v-model="form.sold" placeholder="请输入已销售数量(kg)" /><span
           class="detail"
           @click="isDetail = !isDetail"
           >详情</span
@@ -93,7 +96,7 @@
                 }}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="salesNum" label="销售数量" />
+            <el-table-column prop="salesNum" label="销售数量(kg)" />
           </el-table>
         </div>
       </el-form-item>
@@ -113,7 +116,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from "vue";
+import router from "@/router";
+import { defineComponent, onMounted, reactive, toRefs } from "vue";
 
 export default defineComponent({
   name: "salesView",
@@ -122,12 +126,16 @@ export default defineComponent({
       type: Number,
       default: 0,
     },
+    valueData: {
+      type: Object,
+      require: true,
+    },
   },
   emits: ["activeChange"],
   setup(props, { emit }) {
     const data = reactive({
       form: {
-        name: "",
+        name: props.valueData?.name,
         type: "",
         estProduction: "",
         produced: "",
@@ -179,10 +187,10 @@ export default defineComponent({
         { label: "不另分类的海水产品", value: "030701", parentId: "0307" },
         { label: "不另分类的淡水产品", value: "030702", parentId: "0307" },
       ],
-      value1: "",
-      value2: "",
-      value3: "",
-      value4: "",
+      value1: props.valueData?.value1 || "",
+      value2: props.valueData?.value2 || "",
+      value3: props.valueData?.value3 || "",
+      value4: props.valueData?.value4 || "",
       value1Change: () => {
         data.value2 = "";
         data.value3 = "";
@@ -202,11 +210,29 @@ export default defineComponent({
       },
     });
     const pre = () => {
-      emit("activeChange", props.active - 1);
+      emit("activeChange", { active: props.active - 1 });
+      localStorage.setItem(
+        "salesView",
+        JSON.stringify({
+          ...data.form,
+        })
+      );
     };
+    onMounted(() => {
+      console.log(localStorage.getItem("salesView"));
+      if (localStorage.getItem("salesView")) {
+        const viewData = JSON.parse(localStorage.getItem("salesView") || "");
+        data.form = viewData;
+      }
+    });
+
     const onSubmit = () => {
       console.log(data);
       // 提交
+      localStorage.removeItem("sourceView");
+      localStorage.removeItem("productView");
+      localStorage.removeItem("salesView");
+      router.push("/project");
     };
 
     return {
@@ -219,10 +245,12 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.item {
+  margin-right: 10px;
+}
 .productView {
   padding: 20px 10px;
   .el-form {
-    width: 600px;
     .detail {
       color: #38a0ff;
       cursor: pointer;

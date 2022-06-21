@@ -4,8 +4,8 @@ import { ElMessage } from "element-plus";
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
-    redirect: '/login',
+    path: "/",
+    redirect: "/login",
   },
   {
     path: "/login",
@@ -43,22 +43,22 @@ const routes: Array<RouteRecordRaw> = [
     name: "填报",
     children: [
       {
-        path: "/filling/create",
+        path: "/create",
         name: "新建",
         component: () => import("@/views/Filling/Create/index.vue"),
       },
       {
-        path: "/filling/todo",
+        path: "/todo",
         name: "待完成填报",
         component: () => import("@/views/Filling/Todo/index.vue"),
       },
       {
-        path: "/filling/completed",
+        path: "/completed",
         name: "已完成填报",
         component: () => import("@/views/Filling/Completed/index.vue"),
       },
       {
-        path: "/filling/completion",
+        path: "/completion",
         name: "任务完成情况",
         component: () => import("@/views/Filling/Completion/index.vue"),
       },
@@ -75,6 +75,17 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
+  {
+    path: "/reportForm",
+    component: Layout,
+    children: [
+      {
+        path: "/reportForm",
+        name: "报表",
+        component: () => import("@/views/Report/index.vue"),
+      },
+    ],
+  },
 ];
 
 const router = createRouter({
@@ -83,16 +94,16 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.path === '/login') {
-    next()
+  if (to.path === "/login") {
+    next();
   } else {
-    if (to.path !== '/login' && !localStorage.getItem("farmSys")) {
-      next({ path: '/login' })
-      ElMessage.error('登录过期, 请重新登录!')
+    if (to.path !== "/login" && !localStorage.getItem("farmSys")) {
+      next({ path: "/login" });
+      ElMessage.error("登录过期, 请重新登录!");
     } else {
-      next()
+      next();
     }
   }
-})
+});
 
 export default router;

@@ -22,7 +22,9 @@ export default defineComponent({
             type: "shadow",
           },
         },
-        legend: {},
+        legend: {
+          data: [],
+        },
         grid: {
           left: "3%",
           right: "4%",

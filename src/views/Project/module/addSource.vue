@@ -4,19 +4,19 @@
       ref="addFormRef"
       :model="addForm"
       :rules="rules"
-      label-width="100px"
+      label-width="110px"
     >
-      <el-form-item label="渠道名称：" prop="channel">
-        <el-input v-model="addForm.channel" />
+      <el-form-item label="原材料名称：" prop="name">
+        <el-input v-model="addForm.name" />
       </el-form-item>
-      <el-form-item label="是否启用：" prop="isEnable">
-        <el-radio-group v-model="addForm.isEnable">
-          <el-radio :label="true">是</el-radio>
-          <el-radio :label="false">否</el-radio>
+      <el-form-item label="来源：" prop="source">
+        <el-radio-group v-model="addForm.source">
+          <el-radio :label="true">省内</el-radio>
+          <el-radio :label="false">省外</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="销量：" prop="salesNum">
-        <el-input v-model="addForm.salesNum" />
+      <el-form-item label="数量：" prop="number">
+        <el-input v-model="addForm.number" />
       </el-form-item>
     </el-form>
     <template #footer>
@@ -40,29 +40,29 @@ export default defineComponent({
       dialog: false,
       loading: false,
       addForm: {
-        channel: "",
-        isEnable: "",
-        salesNum: "",
+        name: "",
+        source: "",
+        number: "",
       },
       rules: {
-        channel: [
+        name: [
           {
             required: true,
-            message: "请输入销售渠道",
+            message: "请输入原材料",
             trigger: "blur",
           },
         ],
-        isEnable: [
+        source: [
           {
             required: true,
-            message: "请选择是否已启用",
+            message: "请选择来源",
             trigger: "blur",
           },
         ],
-        salesNum: [
+        number: [
           {
             required: true,
-            message: "请输入销量",
+            message: "请输入原材料数量",
             trigger: "blur",
           },
         ],

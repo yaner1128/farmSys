@@ -6,7 +6,7 @@
       </el-form-item>
       <el-form-item label="产品品类：">
         <el-select
-          v-model="value1"
+          v-model="dataValue.value1"
           placeholder="请选择一级分类"
           class="item"
           @change="value1Change"
@@ -19,41 +19,41 @@
           />
         </el-select>
         <el-select
-          v-model="value2"
+          v-model="dataValue.value2"
           placeholder="请选择二级分类"
           class="item"
-          v-show="value1"
+          v-show="dataValue.value1"
           @change="value2Change"
         >
           <el-option
-            v-for="item in getOptionData(value1)"
+            v-for="item in getOptionData(dataValue.value1)"
             :key="item.label"
             :label="item.label"
             :value="item.value"
           />
         </el-select>
         <el-select
-          v-model="value3"
+          v-model="dataValue.value3"
           placeholder="请选择三级分类"
           class="item"
-          v-show="value2"
+          v-show="dataValue.value2"
           @change="value3Change"
         >
           <el-option
-            v-for="item in getOptionData(value2)"
+            v-for="item in getOptionData(dataValue.value2)"
             :key="item.label"
             :label="item.label"
             :value="item.value"
           />
         </el-select>
         <el-select
-          v-model="value4"
+          v-model="dataValue.value4"
           placeholder="请选择四级分类"
           class="item"
-          v-show="value3"
+          v-show="dataValue.value3"
         >
           <el-option
-            v-for="item in getOptionData(value3)"
+            v-for="item in getOptionData(dataValue.value3)"
             :key="item.label"
             :label="item.label"
             :value="item.value"
@@ -67,15 +67,23 @@
         <el-input v-model="form.sourceType" placeholder="请输入原料来源" />
       </el-form-item>
       <el-form-item label="数量：">
-        <el-input v-model="form.sourceNum" placeholder="请输入原料数量" /><span
+        <el-input
+          v-model="form.sourceNum"
+          placeholder="请输入原料数量(kg)"
+        /><span
           class="detail"
           v-if="form.sourceName && form.sourceType && form.sourceNum"
           @click="add"
           >添加</span
         >
       </el-form-item>
-      <el-form-item label="" v-if="tableData.length > 0">
-        <el-table :data="tableData" row-key="id">
+      <el-form-item label="" v-if="form.tableData.length > 0">
+        <el-table
+          size="medium"
+          :header-cell-style="{ 'background-color': '#f1f1f1' }"
+          :data="form.tableData"
+          row-key="id"
+        >
           <el-table-column prop="name" label="原材料名称" />
           <el-table-column prop="source" label="来源" />
           <el-table-column prop="number" label="数量" />
@@ -92,7 +100,7 @@
         <el-input
           v-model="form.remark"
           type="textarea"
-          placeholder="请输入内容"
+          placeholder="请输入备注内容"
         />
       </el-form-item>
       <el-form-item>
@@ -103,7 +111,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from "vue";
+import { defineComponent, onMounted, reactive, toRefs } from "vue";
 
 export default defineComponent({
   name: "sourceView",
@@ -123,10 +131,10 @@ export default defineComponent({
         sourceType: "",
         sourceNum: "",
         remark: "",
+        tableData: [] as any,
       },
-      tableData: [] as any,
       add: () => {
-        data.tableData.push({
+        data.form.tableData.push({
           name: data.form.sourceName,
           source: data.form.sourceType,
           number: data.form.sourceNum,
@@ -175,21 +183,23 @@ export default defineComponent({
         { label: "不另分类的海水产品", value: "030701", parentId: "0307" },
         { label: "不另分类的淡水产品", value: "030702", parentId: "0307" },
       ],
-      value1: "",
-      value2: "",
-      value3: "",
-      value4: "",
+      dataValue: {
+        value1: "",
+        value2: "",
+        value3: "",
+        value4: "",
+      },
       value1Change: () => {
-        data.value2 = "";
-        data.value3 = "";
-        data.value4 = "";
+        data.dataValue.value2 = "";
+        data.dataValue.value3 = "";
+        data.dataValue.value4 = "";
       },
       value2Change: () => {
-        data.value3 = "";
-        data.value4 = "";
+        data.dataValue.value3 = "";
+        data.dataValue.value4 = "";
       },
       value3Change: () => {
-        data.value4 = "";
+        data.dataValue.value4 = "";
       },
       getOptionData: (parentId: string) => {
         return data.optionData.filter((item) => {
@@ -199,16 +209,34 @@ export default defineComponent({
     });
     const deleteClick = (row: { name: string }) => {
       console.log(row);
-      data.tableData = data.tableData.filter(
+      data.form.tableData = data.form.tableData.filter(
         (item: { name: string; source: string; number: string }) => {
           return item.name !== row.name;
         }
       );
     };
     const next = () => {
-      console.log(data);
-      emit("activeChange", props.active + 1);
+      localStorage.setItem(
+        "sourceView",
+        JSON.stringify({
+          ...data.form,
+          ...data.dataValue,
+        })
+      );
+      emit("activeChange", {
+        active: props.active + 1,
+        dataValue: data.dataValue,
+        name: data.form.name,
+      });
     };
+
+    onMounted(() => {
+      if (localStorage.getItem("sourceView")) {
+        const viewData = JSON.parse(localStorage.getItem("sourceView") || "");
+        data.form = viewData;
+        data.dataValue = viewData;
+      }
+    });
 
     return {
       ...toRefs(data),

@@ -15,14 +15,11 @@
             placeholder="请输入产品名称"
             @change="productNameEdit = true"
           />
-          <el-button v-if="productNameEdit" type="primary" plain
-            >提交产品修改</el-button
-          >
         </el-form-item>
         <el-form-item label="产品品类：">
           <el-select
             v-model="value1"
-            placeholder="Select"
+            placeholder="请选择一级分类"
             class="item"
             @change="value1Change"
           >
@@ -35,7 +32,7 @@
           </el-select>
           <el-select
             v-model="value2"
-            placeholder="Select"
+            placeholder="请选择二级分类"
             class="item"
             v-show="value1"
             @change="value2Change"
@@ -49,7 +46,7 @@
           </el-select>
           <el-select
             v-model="value3"
-            placeholder="Select"
+            placeholder="请选择三级分类"
             class="item"
             v-show="value2"
             @change="value3Change"
@@ -63,7 +60,7 @@
           </el-select>
           <el-select
             v-model="value4"
-            placeholder="Select"
+            placeholder="请选择四级分类"
             class="item"
             v-show="value3"
           >
@@ -74,6 +71,9 @@
               :value="item.value"
             />
           </el-select>
+          <el-button v-if="productNameEdit" type="primary" plain
+            >提交产品修改</el-button
+          >
         </el-form-item>
       </el-form>
       <el-collapse v-model="activeName" accordion>
@@ -81,11 +81,13 @@
           <template #title>
             <div class="title">原材料列表</div>
           </template>
-          <div>
+          <div class="content">
+            <el-button type="primary" @click="addSource">新增</el-button>
             <el-table
               :data="materData"
               :expand-row-keys="expandKey"
               row-key="id"
+              @expand-change="expandChange"
             >
               <el-table-column prop="name" label="原材料名称" />
               <el-table-column prop="source" label="来源" />
@@ -104,15 +106,13 @@
                     :model="rowForm"
                     :rules="rules"
                     label-width="100px"
+                    :disabled="disabledSource"
                   >
-                    <el-form-item label="原料品类：" prop="type">
-                      <el-input v-model="rowForm.type" />
+                    <el-form-item label="原料品类：" prop="name">
+                      <el-input v-model="rowForm.name" />
                     </el-form-item>
                     <el-form-item label="数量：" prop="number">
-                      <el-radio-group v-model="rowForm.number">
-                        <el-radio label="1">营业中</el-radio>
-                        <el-radio label="2">停业</el-radio>
-                      </el-radio-group>
+                      <el-input v-model="rowForm.number" />
                     </el-form-item>
                     <el-form-item label="标签：" prop="tag">
                       <el-checkbox-group v-model="rowForm.tag">
@@ -126,6 +126,7 @@
                     </el-form-item>
                     <el-form-item>
                       <el-button
+                        v-show="!disabledSource"
                         :loading="loading"
                         type="primary"
                         @click="editMaterSubmit()"
@@ -150,6 +151,7 @@
                   v-model="editForm.yearTotal"
                   placeholder="请输入年均产量"
                   @change="yearTotalEdit = true"
+                  clearable
                 />
                 <el-button :disabled="!yearTotalEdit" type="primary" plain
                   >提交</el-button
@@ -170,6 +172,7 @@
               :header-cell-style="{ 'background-color': '#f1f1f1' }"
               :expand-row-keys="expandKey"
               row-key="id"
+              @expand-change="expandChange"
             >
               <el-table-column prop="channel" label="销售渠道" />
               <el-table-column prop="isEnable" label="是否启动">
@@ -194,6 +197,7 @@
                     :model="rowForm"
                     :rules="rules"
                     label-width="100px"
+                    :disabled="disabledSource"
                   >
                     <el-form-item label="渠道名称：">
                       <el-input v-model="rowForm.channel" />
@@ -209,6 +213,7 @@
                     </el-form-item>
                     <el-form-item>
                       <el-button
+                        v-show="!disabledSource"
                         :loading="loading"
                         type="primary"
                         @click="editMaterSubmit()"
@@ -228,21 +233,25 @@
         >关闭</el-button
       >
     </template>
-    <AddSales ref="addSalesRef"></AddSales>
+    <AddSales ref="addSalesRef" @insertData="insertSales"></AddSales>
+    <addSource ref="addSourceRef" @insertData="insertSource"></addSource>
   </el-dialog>
 </template>
 
 <script lang="ts">
 import { defineComponent, reactive, ref, toRefs } from "vue";
 import AddSales from "./addSales.vue";
+import addSource from "./addSource.vue";
 
 export default defineComponent({
   emits: ["init"],
   components: {
     AddSales,
+    addSource,
   },
   setup(props, { emit }) {
     const addSalesRef = ref();
+    const addSourceRef = ref();
     const data = reactive({
       optionData: [
         { label: "种植业产品", value: "01", parentId: "" },
@@ -307,7 +316,7 @@ export default defineComponent({
       rowForm: {
         channel: "",
         isEnable: "",
-        type: "",
+        name: "",
         number: "",
         tag: [],
         salesNum: "",
@@ -321,13 +330,16 @@ export default defineComponent({
           },
         ],
       },
+      disabledSource: true,
       editMater: (row: any) => {
+        data.disabledSource = false;
         data.expandKey = [row.id];
         data.rowForm = JSON.parse(JSON.stringify(row));
       },
       editMaterSubmit: () => {
         // 提交修改，刷新表格
         data.expandKey = [];
+        data.disabledSource = true;
       },
       salesVolumeData: [
         { id: "a1", channel: "电商", isEnable: false, salesNum: 0 },
@@ -340,23 +352,45 @@ export default defineComponent({
         data.expandKey = [];
       },
       value1Change: () => {
+        data.productNameEdit = true;
         data.value2 = "";
         data.value3 = "";
         data.value4 = "";
       },
       value2Change: () => {
+        data.productNameEdit = true;
         data.value3 = "";
         data.value4 = "";
       },
       value3Change: () => {
+        data.productNameEdit = true;
         data.value4 = "";
+      },
+      addSource: () => {
+        addSourceRef.value.open();
+      },
+      insertSource: (val: any) => {
+        console.log(val);
+        data.materData.push(val);
+      },
+      insertSales: (val: any) => {
+        console.log(val);
+        data.salesVolumeData.push(val);
+      },
+      expandChange: (row: any) => {
+        data.rowForm = row;
+        data.disabledSource = true;
       },
     });
     // 显示弹出框
-    const openDialog = (row: any) => {
+    const openDialog = (row?: any) => {
       data.dialog = true;
-
-      data.editForm = row;
+      if (row) {
+        data.editForm = row;
+      } else {
+        data.materData = [];
+        data.salesVolumeData = [];
+      }
     };
     // 修改提交
     const submitClick = () => {
@@ -378,6 +412,7 @@ export default defineComponent({
       submitClick,
       addSalesRef,
       getOptionData,
+      addSourceRef,
     };
   },
 });
@@ -398,6 +433,12 @@ export default defineComponent({
 }
 .content {
   padding: 10px;
+  .btn {
+    position: relative;
+    left: 50%;
+    transform: translate(-50%);
+    margin: 20px 0 0;
+  }
   .item {
     margin-right: 20px;
   }

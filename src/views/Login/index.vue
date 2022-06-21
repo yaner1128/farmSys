@@ -14,9 +14,10 @@
           :model="loginForm"
           label-width="150px"
           :rules="rules"
+          @submit.prevent
         >
           <el-form-item label="企业统一信用代码:" prop="code">
-            <el-input v-model="loginForm.code" />
+            <el-input v-model="loginForm.code" @keyup.enter="onSubmit" />
           </el-form-item>
         </el-form>
         <el-button class="loginBtn" type="primary" @click="onSubmit"
@@ -51,12 +52,11 @@ export default defineComponent({
     });
     // 登录点击事件
     const onSubmit = () => {
-      console.log(data.loginForm);
       loginFormRef.value.validate((valid: boolean) => {
         if (valid) {
           // 跳转首页
-          localStorage.setItem("farmSys", JSON.parse(JSON.stringify(data.loginForm)))
-          router.push("/project");
+          localStorage.setItem("farmSys", JSON.stringify(data.loginForm));
+          router.replace("/project");
         }
       });
     };
