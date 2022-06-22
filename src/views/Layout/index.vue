@@ -3,13 +3,30 @@
     <el-header>
       <div>
         <h1>欢迎访问湖南省农业生产调度管理平台</h1>
-        <div class="loginOut" @click="loginOutClick">退出登录</div>
+        <el-dropdown class="loginOut">
+          <span class="el-dropdown-link">
+            基本设置
+            <el-icon class="el-icon--right">
+              <arrow-down />
+            </el-icon>
+          </span>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item @click="changePasW">修改密码</el-dropdown-item>
+              <el-dropdown-item divided @click="loginOutClick"
+                >退出登录</el-dropdown-item
+              >
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+        <passwordBox ref="passwordRef"></passwordBox>
       </div>
     </el-header>
     <el-container>
       <el-aside class="aside">
         <el-scrollbar height="100vh">
           <el-menu
+            v-if="!isAdmin"
             active-text-color="#007d79"
             background-color="#bddcd3"
             class="el-menu-vertical-demo"
@@ -41,6 +58,29 @@
               <span>报表</span>
             </el-menu-item>
           </el-menu>
+          <el-menu
+            v-else
+            active-text-color="#007d79"
+            background-color="#bddcd3"
+            class="el-menu-vertical-demo"
+            text-color="#007d79"
+            :default-active="routerCur"
+            :unique-opened="true"
+            router
+          >
+            <el-menu-item index="/home">
+              <el-icon><List /></el-icon>
+              <span>工作台</span>
+            </el-menu-item>
+            <el-menu-item index="/library">
+              <el-icon><Histogram /></el-icon>
+              <span>企业库</span>
+            </el-menu-item>
+            <el-menu-item index="/plan">
+              <el-icon><Histogram /></el-icon>
+              <span>报送计划</span>
+            </el-menu-item>
+          </el-menu>
         </el-scrollbar>
       </el-aside>
       <el-main>
@@ -68,10 +108,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { Document, List, Setting, Histogram } from "@element-plus/icons-vue";
+import { defineComponent, ref } from "vue";
+import {
+  Document,
+  List,
+  Setting,
+  Histogram,
+  ArrowDown,
+} from "@element-plus/icons-vue";
 import router from "@/router";
 import { ElMessageBox } from "element-plus";
+import passwordBox from "./module/passwordBox.vue";
 
 export default defineComponent({
   name: "",
@@ -80,6 +127,8 @@ export default defineComponent({
     List,
     Setting,
     Histogram,
+    ArrowDown,
+    passwordBox,
   },
   computed: {
     routerCur() {
@@ -87,11 +136,13 @@ export default defineComponent({
     },
     breadcrumbList() {
       return router.currentRoute.value.matched.filter((item) => {
-        return item.name && item.name !== "工作台";
+        return item.name;
       });
     },
   },
   setup() {
+    const isAdmin = JSON.parse(localStorage.getItem("isAdmin") || "");
+    // 退出登录
     const loginOutClick = () => {
       ElMessageBox.confirm("确认退出登录吗？", "提示", {
         confirmButtonText: "确认",
@@ -103,8 +154,17 @@ export default defineComponent({
       });
     };
 
+    // 修改密码点击事件
+    const passwordRef = ref();
+    const changePasW = () => {
+      passwordRef.value.open();
+    };
+
     return {
       loginOutClick,
+      passwordRef,
+      changePasW,
+      isAdmin,
     };
   },
 });

@@ -1,7 +1,7 @@
 import Mock from "mockjs";
 
 Mock.setup({
-  timeout: "3000",
+  timeout: "500",
 });
 
 let configArray: any[] = [];

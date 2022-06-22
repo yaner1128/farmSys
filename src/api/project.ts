@@ -9,3 +9,18 @@ export function getProjectList(params: any) {
     params,
   });
 }
+
+export function getCompanyList(params: any) {
+  return request({
+    url: "api/getCompanyList",
+    method: "post",
+    params,
+  });
+}
+export function getCompanyDetails(params: any) {
+  return request({
+    url: "api/getCompanyDetails",
+    method: "post",
+    params,
+  });
+}
