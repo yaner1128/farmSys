@@ -83,7 +83,7 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/home",
         name: "工作台",
-        component: () => import("@/views/WorkSpace/index.vue"),
+        component: () => import("@/views/admin/WorkSpace/index.vue"),
       },
     ],
   },
@@ -95,7 +95,7 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/library",
         name: "企业库",
-        component: () => import("@/views/EnterLibrary/index.vue"),
+        component: () => import("@/views/admin/EnterLibrary/index.vue"),
       },
     ],
   },
@@ -107,7 +107,19 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/plan",
         name: "报送计划",
-        component: () => import("@/views/SubPlan/index.vue"),
+        component: () => import("@/views/admin/SubPlan/index.vue"),
+      },
+    ],
+  },
+  {
+    path: "/report",
+    component: Layout,
+    redirect: "/report",
+    children: [
+      {
+        path: "/report",
+        name: "报表",
+        component: () => import("@/views/admin/Report/index.vue"),
       },
     ],
   },

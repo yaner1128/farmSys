@@ -73,12 +73,16 @@
               <span>工作台</span>
             </el-menu-item>
             <el-menu-item index="/library">
-              <el-icon><Histogram /></el-icon>
+              <el-icon><Document /></el-icon>
               <span>企业库</span>
             </el-menu-item>
             <el-menu-item index="/plan">
-              <el-icon><Histogram /></el-icon>
+              <el-icon><TrendCharts /></el-icon>
               <span>报送计划</span>
+            </el-menu-item>
+            <el-menu-item index="/report">
+              <el-icon><Histogram /></el-icon>
+              <span>报表</span>
             </el-menu-item>
           </el-menu>
         </el-scrollbar>
@@ -115,6 +119,7 @@ import {
   Setting,
   Histogram,
   ArrowDown,
+  TrendCharts,
 } from "@element-plus/icons-vue";
 import router from "@/router";
 import { ElMessageBox } from "element-plus";
@@ -129,6 +134,7 @@ export default defineComponent({
     Histogram,
     ArrowDown,
     passwordBox,
+    TrendCharts,
   },
   computed: {
     routerCur() {

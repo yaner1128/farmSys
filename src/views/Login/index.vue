@@ -21,7 +21,10 @@
           @submit.prevent
         >
           <el-form-item label="企业统一信用代码:" prop="code">
-            <el-input v-model="loginForm.code" @keyup.enter="onSubmit" />
+            <el-input v-model="loginForm.code" />
+          </el-form-item>
+          <el-form-item label="密码:" prop="password">
+            <el-input v-model="loginForm.password" @keyup.enter="onSubmit" />
           </el-form-item>
         </el-form>
         <!-- 行政端 -->
@@ -70,12 +73,20 @@ export default defineComponent({
       // 企业端
       loginForm: {
         code: "",
+        password: "",
       },
       rules: {
         code: [
           {
             required: true,
             message: "请输入企业统一信用代码",
+            trigger: "blur",
+          },
+        ],
+        password: [
+          {
+            required: true,
+            message: "请输入密码",
             trigger: "blur",
           },
         ],
