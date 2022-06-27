@@ -12,7 +12,10 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item @click="changePasW">修改密码</el-dropdown-item>
+              <el-dropdown-item @click="goToDaPing">大屏</el-dropdown-item>
+              <el-dropdown-item divided @click="changePasW"
+                >修改密码</el-dropdown-item
+              >
               <el-dropdown-item divided @click="loginOutClick"
                 >退出登录</el-dropdown-item
               >
@@ -166,11 +169,16 @@ export default defineComponent({
       passwordRef.value.open();
     };
 
+    const goToDaPing = () => {
+      window.open("./view");
+    };
+
     return {
       loginOutClick,
       passwordRef,
       changePasW,
       isAdmin,
+      goToDaPing,
     };
   },
 });

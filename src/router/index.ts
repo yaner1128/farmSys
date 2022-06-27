@@ -13,6 +13,12 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/Login/index.vue"),
   },
   {
+    path: "/view",
+    name: "大屏",
+    component: () => import("@/views/largeScreen/index.vue"),
+  },
+  // 企业端
+  {
     path: "/project",
     component: Layout,
     redirect: "/project",
@@ -118,7 +124,7 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: "/report",
-        name: "报表",
+        name: "行政端报表",
         component: () => import("@/views/admin/Report/index.vue"),
       },
     ],
